@@ -30,8 +30,8 @@
         <h2>二合組合產生器</h2>
         <p>請輸入 2~15 個數字（範圍 1~39）</p>
 
-        <!-- 從 Google 雲端硬碟載入 CSV -->
-        <button onclick="downloadCSV()">從 Google 雲端硬碟載入</button>
+        <!-- 從 GitHub 下載 CSV -->
+        <button onclick="downloadCSV()">從 GitHub 下載</button>
 
         <!-- 歷史號碼下拉選單 -->
         <p>選擇歷史號碼：</p>
@@ -68,8 +68,7 @@
     <script>
         let attemptCount = 0;
         const maxAttempts = 3;
-        const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-        const googleDriveCSVUrl = "https://drive.google.com/uc?export=download&id=1OK0-qlQ6fqSbk5oChBnHnzUm2itB1cDL";
+        const githubCSVUrl = "https://raw.githubusercontent.com/Venox250/two-number-combinations/main/539_2.CSV";
 
         function checkPassword() {
             const today = new Date();
@@ -95,11 +94,10 @@
 
         async function downloadCSV() {
             try {
-                let response = await fetch(proxyUrl + googleDriveCSVUrl);
+                let response = await fetch(githubCSVUrl);
                 if (!response.ok) throw new Error("無法下載 CSV");
                 let csvData = await response.text();
 
-                // 解析 CSV，每行作為一組歷史號碼
                 let rows = csvData.split("\n").map(line => line.trim()).filter(line => line);
                 let dropdown = document.getElementById("history-dropdown");
                 dropdown.innerHTML = '<option value="">請選擇歷史號碼</option>';
@@ -114,7 +112,7 @@
                 alert("歷史號碼載入完成！");
             } catch (error) {
                 console.error("下載 CSV 失敗:", error);
-                alert("下載 CSV 失敗，請檢查雲端硬碟連結或稍後再試！");
+                alert("下載 CSV 失敗，請檢查 GitHub 連結！");
             }
         }
 
