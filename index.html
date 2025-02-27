@@ -10,7 +10,7 @@
         .input-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; max-width: 300px; margin: auto; }
         .input-grid input { width: 50px; padding: 5px; text-align: center; font-size: 14px; }
         .button-group { margin-top: 10px; }
-        .result-table { margin: auto; border-collapse: collapse; width: 80%; }
+        .result-table { margin: auto; border-collapse: collapse; width: 80%; margin-top: 20px; }
         th, td { border: 1px solid black; padding: 5px; text-align: center; }
     </style>
 </head>
@@ -58,6 +58,9 @@
             <input type="number" id="num14" min="1" max="39">
             <input type="number" id="num15" min="1" max="39">
         </div>
+
+        <!-- 生成組合按鈕 -->
+        <button onclick="generateCombinations()">生成組合</button>
 
         <h3 id="total-combinations"></h3>
 
@@ -127,6 +130,37 @@
             for (let i = 0; i < 15; i++) {
                 document.getElementById("num" + (i + 1)).value = numberList[i] || "";
             }
+        }
+
+        function generateCombinations() {
+            let numbers = [];
+            for (let i = 1; i <= 15; i++) {
+                let num = document.getElementById("num" + i).value;
+                if (num) numbers.push(parseInt(num));
+            }
+
+            if (numbers.length < 2) {
+                alert("請至少輸入 2 個數字！");
+                return;
+            }
+
+            let combinations = [];
+            for (let i = 0; i < numbers.length; i++) {
+                for (let j = i + 1; j < numbers.length; j++) {
+                    combinations.push(`${numbers[i]},${numbers[j]}`);
+                }
+            }
+
+            document.getElementById("total-combinations").innerText = `總組合數：${combinations.length}`;
+            let table = document.getElementById("results-table");
+            table.innerHTML = "";
+
+            let row;
+            combinations.forEach((comb, index) => {
+                if (index % 5 === 0) row = table.insertRow();
+                let cell = row.insertCell();
+                cell.innerText = comb;
+            });
         }
     </script>
 
