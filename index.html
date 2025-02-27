@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二合組合產生器</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #main-content { display: none; } /* 預設隱藏主要功能 */
+        table { margin: auto; border-collapse: collapse; width: 80%; }
+        th, td { border: 1px solid black; padding: 5px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <!-- 安全碼輸入區 -->
+    <div id="password-section">
+        <h2>請輸入今日安全碼</h2>
+        <p>請輸入當前日期（格式：MMDD，例如 4 月 1 日 → <b>0401</b>）</p>
+        <input type="password" id="password-input" placeholder="輸入 4 位數字">
+        <button onclick="checkPassword()">進入</button>
+        <p id="error-message" style="color: red;"></p>
+    </div>
+
+    <!-- 主要功能區（預設隱藏） -->
+    <div id="main-content">
+        <h2>二合組合產生器</h2>
+        <p>輸入數字後，系統將自動生成所有二合組合。</p>
+        <input type="text" id="numbers" placeholder="輸入 2~15 個數字 (以逗號分隔)">
+        <button onclick="generateCombinations()">開始計算</button>
+        <h3 id="total-combinations"></h3>
+        <table id="results-table"></table>
+    </div>
+
+    <script>
+        function checkPassword() {
+            var today = new Date();
+            var month = String(today.getMonth() + 1).padStart(2, '0'); // 月份補零
+            var day = String(today.getDate()).padStart(2, '0'); // 日期補零
+            var correctPassword = month + day; // 當前日期的 4 位數字
+
+            var userInput = document.getElementById("password-input").value;
+            var errorMessage = document.getElementById("error-message");
+
+            if (userInput === correctPassword) {
+                document.getElementById("password-section").style.display = "none";
+                document.getElementById("main-content").style.display = "block";
+            } else {
+                errorMessage.textContent = "安全碼錯誤，請重試！";
+            }
+        }
+
+        function generateCombinations() {
+            var input = document.getElementById("numbers").value;
+            var numbers = input.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+
+            if (numbers.length < 2 || numbers.length > 15) {
+                alert("請輸入 2~15 個有效數字！");
+                return;
+            }
+
+            var combinations = [];
+            for (var i = 0; i < numbers.length; i++) {
+                for (var j = i + 1; j < numbers.length; j++) {
+                    combinations.push(numbers[i] + "," + numbers[j]);
+                }
+            }
+
+            document.getElementById("total-combinations").textContent = "總組合數：" + combinations.length;
+
+            var table = document.getElementById("results-table");
+            table.innerHTML = "<tr><th>組合</th></tr>";
+
+            combinations.forEach(pair => {
+                var row = table.insertRow();
+                var cell = row.insertCell(0);
+                cell.textContent = pair;
+            });
+        }
+    </script>
+
+</body>
+</html>
