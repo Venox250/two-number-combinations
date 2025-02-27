@@ -7,18 +7,16 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         #main-content { display: none; } /* 預設隱藏主要功能 */
-        table { margin: auto; border-collapse: collapse; width: 80%; }
-        th, td { border: 1px solid black; padding: 5px; text-align: center; }
     </style>
 </head>
 <body>
 
     <!-- 安全碼輸入區 -->
     <div id="password-section">
-        <h2>請輸入今日安全碼</h2>
-        <p>請輸入當前日期（格式：MMDD，例如 4 月 1 日 → <b>0401</b>）</p>
-        <input type="password" id="password-input" placeholder="輸入 4 位數字">
-        <button onclick="checkPassword()">進入</button>
+        <h2>請輸入安全碼</h2>
+        <p>請輸入 6~12 位數字</p>
+        <input type="password" id="password-input" placeholder="輸入 6~12 位數字">
+        <button onclick="checkPassword()" id="submit-button">進入</button>
         <p id="error-message" style="color: red;"></p>
     </div>
 
@@ -33,20 +31,38 @@
     </div>
 
     <script>
-        function checkPassword() {
-            var today = new Date();
-            var month = String(today.getMonth() + 1).padStart(2, '0'); // 月份補零
-            var day = String(today.getDate()).padStart(2, '0'); // 日期補零
-            var correctPassword = month + day; // 當前日期的 4 位數字
+        let attemptCount = 0; // 記錄錯誤次數
+        const maxAttempts = 3; // 最大嘗試次數
 
-            var userInput = document.getElementById("password-input").value;
-            var errorMessage = document.getElementById("error-message");
+        function checkPassword() {
+            const userInput = document.getElementById("password-input").value;
+            const errorMessage = document.getElementById("error-message");
+            const passwordInput = document.getElementById("password-input");
+            const submitButton = document.getElementById("submit-button");
+
+            // 設定的安全碼（可自行更改）
+            const correctPassword = "123456"; 
+
+            // 驗證是否為 6~12 位數字
+            const passwordPattern = /^[0-9]{6,12}$/;
+
+            if (!passwordPattern.test(userInput)) {
+                errorMessage.textContent = "安全碼格式錯誤！請輸入 6~12 位數字。";
+                return;
+            }
 
             if (userInput === correctPassword) {
                 document.getElementById("password-section").style.display = "none";
                 document.getElementById("main-content").style.display = "block";
             } else {
-                errorMessage.textContent = "安全碼錯誤，請重試！";
+                attemptCount++;
+                if (attemptCount >= maxAttempts) {
+                    errorMessage.textContent = "已達最大嘗試次數，請稍後再試！";
+                    passwordInput.disabled = true;  // 禁用輸入框
+                    submitButton.disabled = true;  // 禁用按鈕
+                } else {
+                    errorMessage.textContent = `安全碼錯誤，剩餘嘗試次數：${maxAttempts - attemptCount}`;
+                }
             }
         }
 
