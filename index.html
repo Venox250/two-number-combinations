@@ -10,7 +10,7 @@
         .input-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 400px; margin: auto; }
         .input-grid input { width: 60px; padding: 5px; text-align: center; }
         .result-table { margin: auto; border-collapse: collapse; width: 80%; }
-        th, td { border: 1px solid black; padding: 5px; text-align: center; }
+        th, td { border: 1px solid black; padding: 5px; text-align: left; }
     </style>
 </head>
 <body>
@@ -52,7 +52,7 @@
         <h3 id="total-combinations"></h3>
 
         <!-- 組合結果表格 -->
-        <table class="result-table"></table>
+        <table class="result-table" id="results-table"></table>
     </div>
 
     <script>
@@ -108,23 +108,16 @@
 
             document.getElementById("total-combinations").textContent = "總組合數：" + combinations.length;
 
-            let table = document.querySelector(".result-table");
-            table.innerHTML = "";
+            let table = document.getElementById("results-table");
+            table.innerHTML = ""; 
 
-            let headers = document.createElement("tr");
-            let columns = Math.ceil(combinations.length / 10);
-            for (let i = 0; i < columns; i++) {
-                let th = document.createElement("th");
-                th.textContent = `組合 ${i * 10 + 1}~${(i + 1) * 10}`;
-                headers.appendChild(th);
-            }
-            table.appendChild(headers);
+            let maxColumns = 10; // 每行最多 10 組
+            let rows = Math.ceil(combinations.length / maxColumns);
 
-            let maxRows = Math.ceil(combinations.length / columns);
-            for (let row = 0; row < maxRows; row++) {
+            for (let i = 0; i < rows; i++) {
                 let tr = document.createElement("tr");
-                for (let col = 0; col < columns; col++) {
-                    let index = col * maxRows + row;
+                for (let j = 0; j < maxColumns; j++) {
+                    let index = i * maxColumns + j;
                     let td = document.createElement("td");
                     if (index < combinations.length) {
                         td.textContent = combinations[index];
