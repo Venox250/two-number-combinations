@@ -68,6 +68,7 @@
     <script>
         let attemptCount = 0;
         const maxAttempts = 3;
+        const proxyUrl = "https://cors-anywhere.herokuapp.com/";
         const googleDriveCSVUrl = "https://drive.google.com/uc?export=download&id=1OK0-qlQ6fqSbk5oChBnHnzUm2itB1cDL";
 
         function checkPassword() {
@@ -94,7 +95,7 @@
 
         async function downloadCSV() {
             try {
-                let response = await fetch(googleDriveCSVUrl);
+                let response = await fetch(proxyUrl + googleDriveCSVUrl);
                 if (!response.ok) throw new Error("無法下載 CSV");
                 let csvData = await response.text();
 
@@ -113,7 +114,7 @@
                 alert("歷史號碼載入完成！");
             } catch (error) {
                 console.error("下載 CSV 失敗:", error);
-                alert("下載 CSV 失敗，請檢查雲端硬碟連結！");
+                alert("下載 CSV 失敗，請檢查雲端硬碟連結或稍後再試！");
             }
         }
 
