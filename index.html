@@ -10,9 +10,7 @@
         .input-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 400px; margin: auto; }
         .input-grid input { width: 60px; padding: 5px; text-align: center; }
         .result-table { margin: auto; border-collapse: collapse; width: 80%; }
-        th, td { border: 1px solid black; padding: 5px; text-align: center; width: 33%; }
-        .combination-group { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-        .combination-group span { display: inline-block; padding: 5px 10px; background: #f0f0f0; border-radius: 5px; }
+        th, td { border: 1px solid black; padding: 5px; text-align: center; }
     </style>
 </head>
 <body>
@@ -54,18 +52,7 @@
         <h3 id="total-combinations"></h3>
 
         <!-- 組合結果表格 -->
-        <table class="result-table">
-            <tr>
-                <th>組合 1~10</th>
-                <th>組合 11~20</th>
-                <th>組合 21~30</th>
-            </tr>
-            <tr>
-                <td id="group1"></td>
-                <td id="group2"></td>
-                <td id="group3"></td>
-            </tr>
-        </table>
+        <table class="result-table"></table>
     </div>
 
     <script>
@@ -121,16 +108,31 @@
 
             document.getElementById("total-combinations").textContent = "總組合數：" + combinations.length;
 
-            // 分組顯示結果（每 10 組為一欄）
-            function formatGroup(start, end) {
-                return combinations.slice(start, end)
-                    .map(pair => `<span>${pair}</span>`)
-                    .join(" ");
-            }
+            let table = document.querySelector(".result-table");
+            table.innerHTML = "";
 
-            document.getElementById("group1").innerHTML = `<div class="combination-group">${formatGroup(0, 10)}</div>`;
-            document.getElementById("group2").innerHTML = `<div class="combination-group">${formatGroup(10, 20)}</div>`;
-            document.getElementById("group3").innerHTML = `<div class="combination-group">${formatGroup(20, 30)}</div>`;
+            let headers = document.createElement("tr");
+            let columns = Math.ceil(combinations.length / 10);
+            for (let i = 0; i < columns; i++) {
+                let th = document.createElement("th");
+                th.textContent = `組合 ${i * 10 + 1}~${(i + 1) * 10}`;
+                headers.appendChild(th);
+            }
+            table.appendChild(headers);
+
+            let maxRows = Math.ceil(combinations.length / columns);
+            for (let row = 0; row < maxRows; row++) {
+                let tr = document.createElement("tr");
+                for (let col = 0; col < columns; col++) {
+                    let index = col * maxRows + row;
+                    let td = document.createElement("td");
+                    if (index < combinations.length) {
+                        td.textContent = combinations[index];
+                    }
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
         }
     </script>
 
