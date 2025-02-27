@@ -95,6 +95,7 @@
         async function downloadCSV() {
             try {
                 let response = await fetch(googleDriveCSVUrl);
+                if (!response.ok) throw new Error("無法下載 CSV");
                 let csvData = await response.text();
 
                 // 解析 CSV，每行作為一組歷史號碼
