@@ -10,7 +10,9 @@
         .input-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 400px; margin: auto; }
         .input-grid input { width: 60px; padding: 5px; text-align: center; }
         .result-table { margin: auto; border-collapse: collapse; width: 80%; }
-        th, td { border: 1px solid black; padding: 5px; text-align: center; }
+        th, td { border: 1px solid black; padding: 5px; text-align: center; width: 33%; }
+        .combination-group { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        .combination-group span { display: inline-block; padding: 5px 10px; background: #f0f0f0; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -18,7 +20,7 @@
     <!-- 安全碼輸入區 -->
     <div id="password-section">
         <h2>請輸入安全碼</h2>
-        <p>請輸入 6~12 位數字</p> <!-- 文字修改，但實際仍是 MMDD 驗證 -->
+        <p>請輸入 6~12 位數字</p>
         <input type="password" id="password-input" placeholder="輸入 6~12 位數字">
         <button onclick="checkPassword()" id="submit-button">進入</button>
         <p id="error-message" style="color: red;"></p>
@@ -119,14 +121,16 @@
 
             document.getElementById("total-combinations").textContent = "總組合數：" + combinations.length;
 
-            // 分組顯示結果
-            let group1 = combinations.slice(0, 10).join("<br>");
-            let group2 = combinations.slice(10, 20).join("<br>");
-            let group3 = combinations.slice(20, 30).join("<br>");
+            // 分組顯示結果（每 10 組為一欄）
+            function formatGroup(start, end) {
+                return combinations.slice(start, end)
+                    .map(pair => `<span>${pair}</span>`)
+                    .join(" ");
+            }
 
-            document.getElementById("group1").innerHTML = group1;
-            document.getElementById("group2").innerHTML = group2;
-            document.getElementById("group3").innerHTML = group3;
+            document.getElementById("group1").innerHTML = `<div class="combination-group">${formatGroup(0, 10)}</div>`;
+            document.getElementById("group2").innerHTML = `<div class="combination-group">${formatGroup(10, 20)}</div>`;
+            document.getElementById("group3").innerHTML = `<div class="combination-group">${formatGroup(20, 30)}</div>`;
         }
     </script>
 
