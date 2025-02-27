@@ -7,10 +7,10 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         #main-content { display: none; } /* 預設隱藏主要功能 */
-        .input-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 400px; margin: auto; }
-        .input-grid input { width: 60px; padding: 5px; text-align: center; font-size: 16px; }
+        .input-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; max-width: 300px; margin: auto; }
+        .input-grid input { width: 50px; padding: 5px; text-align: center; font-size: 14px; }
         .result-table { margin: auto; border-collapse: collapse; width: 80%; }
-        th, td { border: 1px solid black; padding: 5px; text-align: left; }
+        th, td { border: 1px solid black; padding: 5px; text-align: center; }
     </style>
 </head>
 <body>
@@ -111,7 +111,7 @@
             let table = document.getElementById("results-table");
             table.innerHTML = ""; 
 
-            let maxColumns = 10; // 每行最多 10 組
+            let maxColumns = 5; // 每行最多 5 組
             let rows = Math.ceil(combinations.length / maxColumns);
 
             for (let i = 0; i < rows; i++) {
