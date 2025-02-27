@@ -7,6 +7,10 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
         #main-content { display: none; } /* 預設隱藏主要功能 */
+        .input-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 400px; margin: auto; }
+        .input-grid input { width: 60px; padding: 5px; text-align: center; }
+        .result-table { margin: auto; border-collapse: collapse; width: 80%; }
+        th, td { border: 1px solid black; padding: 5px; text-align: center; }
     </style>
 </head>
 <body>
@@ -23,11 +27,43 @@
     <!-- 主要功能區（預設隱藏） -->
     <div id="main-content">
         <h2>二合組合產生器</h2>
-        <p>輸入數字後，系統將自動生成所有二合組合。</p>
-        <input type="text" id="numbers" placeholder="輸入 2~15 個數字 (以逗號分隔)">
-        <button onclick="generateCombinations()">開始計算</button>
+        <p>請輸入 2~15 個數字</p>
+
+        <!-- 固定 15 格輸入框 -->
+        <div class="input-grid">
+            <input type="text" id="num1">
+            <input type="text" id="num2">
+            <input type="text" id="num3">
+            <input type="text" id="num4">
+            <input type="text" id="num5">
+            <input type="text" id="num6">
+            <input type="text" id="num7">
+            <input type="text" id="num8">
+            <input type="text" id="num9">
+            <input type="text" id="num10">
+            <input type="text" id="num11">
+            <input type="text" id="num12">
+            <input type="text" id="num13">
+            <input type="text" id="num14">
+            <input type="text" id="num15">
+        </div>
+        <br>
+        <button onclick="generateCombinations()">生成組合</button>
         <h3 id="total-combinations"></h3>
-        <table id="results-table"></table>
+
+        <!-- 組合結果表格 -->
+        <table class="result-table">
+            <tr>
+                <th>組合 1~10</th>
+                <th>組合 11~20</th>
+                <th>組合 21~30</th>
+            </tr>
+            <tr>
+                <td id="group1"></td>
+                <td id="group2"></td>
+                <td id="group3"></td>
+            </tr>
+        </table>
     </div>
 
     <script>
@@ -52,8 +88,8 @@
                 attemptCount++;
                 if (attemptCount >= maxAttempts) {
                     errorMessage.textContent = "已達最大嘗試次數，請稍後再試！";
-                    passwordInput.disabled = true;  // 禁用輸入框
-                    submitButton.disabled = true;  // 禁用按鈕
+                    passwordInput.disabled = true;
+                    submitButton.disabled = true;
                 } else {
                     errorMessage.textContent = `安全碼錯誤，剩餘嘗試次數：${maxAttempts - attemptCount}`;
                 }
@@ -61,31 +97,36 @@
         }
 
         function generateCombinations() {
-            var input = document.getElementById("numbers").value;
-            var numbers = input.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+            let numbers = [];
+            for (let i = 1; i <= 15; i++) {
+                let value = document.getElementById("num" + i).value.trim();
+                if (value !== "" && !isNaN(value)) {
+                    numbers.push(parseInt(value));
+                }
+            }
 
-            if (numbers.length < 2 || numbers.length > 15) {
-                alert("請輸入 2~15 個有效數字！");
+            if (numbers.length < 2) {
+                alert("請至少輸入 2 個數字！");
                 return;
             }
 
-            var combinations = [];
-            for (var i = 0; i < numbers.length; i++) {
-                for (var j = i + 1; j < numbers.length; j++) {
+            let combinations = [];
+            for (let i = 0; i < numbers.length; i++) {
+                for (let j = i + 1; j < numbers.length; j++) {
                     combinations.push(numbers[i] + "," + numbers[j]);
                 }
             }
 
             document.getElementById("total-combinations").textContent = "總組合數：" + combinations.length;
 
-            var table = document.getElementById("results-table");
-            table.innerHTML = "<tr><th>組合</th></tr>";
+            // 分組顯示結果
+            let group1 = combinations.slice(0, 10).join("<br>");
+            let group2 = combinations.slice(10, 20).join("<br>");
+            let group3 = combinations.slice(20, 30).join("<br>");
 
-            combinations.forEach(pair => {
-                var row = table.insertRow();
-                var cell = row.insertCell(0);
-                cell.textContent = pair;
-            });
+            document.getElementById("group1").innerHTML = group1;
+            document.getElementById("group2").innerHTML = group2;
+            document.getElementById("group3").innerHTML = group3;
         }
     </script>
 
