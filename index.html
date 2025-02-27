@@ -6,9 +6,10 @@
     <title>二合組合產生器</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        #main-content { display: none; } /* 預設隱藏主要功能 */
+        #main-content { display: none; }
         .input-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; max-width: 300px; margin: auto; }
         .input-grid input { width: 50px; padding: 5px; text-align: center; font-size: 14px; }
+        .button-group { margin-top: 10px; }
         .result-table { margin: auto; border-collapse: collapse; width: 80%; }
         th, td { border: 1px solid black; padding: 5px; text-align: center; }
     </style>
@@ -29,7 +30,17 @@
         <h2>二合組合產生器</h2>
         <p>請輸入 2~15 個數字（範圍 1~39）</p>
 
-        <!-- 固定 15 格輸入框（手機輸入時固定數字鍵盤） -->
+        <!-- 從 Google 雲端硬碟載入 CSV -->
+        <button onclick="downloadCSV()">從 Google 雲端硬碟載入</button>
+
+        <!-- 歷史號碼下拉選單 -->
+        <p>選擇歷史號碼：</p>
+        <select id="history-dropdown">
+            <option value="">請選擇歷史號碼</option>
+        </select>
+        <button onclick="fillFromHistory()">填入號碼</button>
+
+        <!-- 固定 15 格輸入框 -->
         <div class="input-grid">
             <input type="number" id="num1" min="1" max="39">
             <input type="number" id="num2" min="1" max="39">
@@ -47,8 +58,7 @@
             <input type="number" id="num14" min="1" max="39">
             <input type="number" id="num15" min="1" max="39">
         </div>
-        <br>
-        <button onclick="generateCombinations()">生成組合</button>
+
         <h3 id="total-combinations"></h3>
 
         <!-- 組合結果表格 -->
@@ -56,19 +66,18 @@
     </div>
 
     <script>
-        let attemptCount = 0; // 記錄錯誤次數
-        const maxAttempts = 3; // 最大嘗試次數
+        let attemptCount = 0;
+        const maxAttempts = 3;
+        const googleDriveCSVUrl = "https://drive.google.com/uc?export=download&id=1OK0-qlQ6fqSbk5oChBnHnzUm2itB1cDL";
 
         function checkPassword() {
             const today = new Date();
-            const month = String(today.getMonth() + 1).padStart(2, '0'); // 月份補零
-            const day = String(today.getDate()).padStart(2, '0'); // 日期補零
-            const correctPassword = month + day; // 當前日期的 4 位數字，例如 0227
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const correctPassword = month + day;
 
             const userInput = document.getElementById("password-input").value;
             const errorMessage = document.getElementById("error-message");
-            const passwordInput = document.getElementById("password-input");
-            const submitButton = document.getElementById("submit-button");
 
             if (userInput === correctPassword) {
                 document.getElementById("password-section").style.display = "none";
@@ -77,54 +86,46 @@
                 attemptCount++;
                 if (attemptCount >= maxAttempts) {
                     errorMessage.textContent = "已達最大嘗試次數，請稍後再試！";
-                    passwordInput.disabled = true;
-                    submitButton.disabled = true;
                 } else {
                     errorMessage.textContent = `安全碼錯誤，剩餘嘗試次數：${maxAttempts - attemptCount}`;
                 }
             }
         }
 
-        function generateCombinations() {
-            let numbers = [];
-            for (let i = 1; i <= 15; i++) {
-                let value = document.getElementById("num" + i).value.trim();
-                if (value !== "" && !isNaN(value)) {
-                    numbers.push(parseInt(value));
-                }
-            }
+        async function downloadCSV() {
+            try {
+                let response = await fetch(googleDriveCSVUrl);
+                let csvData = await response.text();
 
-            if (numbers.length < 2) {
-                alert("請至少輸入 2 個數字！");
+                // 解析 CSV，每行作為一組歷史號碼
+                let rows = csvData.split("\n").map(line => line.trim()).filter(line => line);
+                let dropdown = document.getElementById("history-dropdown");
+                dropdown.innerHTML = '<option value="">請選擇歷史號碼</option>';
+
+                rows.forEach(row => {
+                    let option = document.createElement("option");
+                    option.value = row;
+                    option.textContent = row;
+                    dropdown.appendChild(option);
+                });
+
+                alert("歷史號碼載入完成！");
+            } catch (error) {
+                console.error("下載 CSV 失敗:", error);
+                alert("下載 CSV 失敗，請檢查雲端硬碟連結！");
+            }
+        }
+
+        function fillFromHistory() {
+            let selectedNumbers = document.getElementById("history-dropdown").value;
+            if (!selectedNumbers) {
+                alert("請選擇歷史號碼");
                 return;
             }
 
-            let combinations = [];
-            for (let i = 0; i < numbers.length; i++) {
-                for (let j = i + 1; j < numbers.length; j++) {
-                    combinations.push(numbers[i] + "," + numbers[j]);
-                }
-            }
-
-            document.getElementById("total-combinations").textContent = "總組合數：" + combinations.length;
-
-            let table = document.getElementById("results-table");
-            table.innerHTML = ""; 
-
-            let maxColumns = 5; // 每行最多 5 組
-            let rows = Math.ceil(combinations.length / maxColumns);
-
-            for (let i = 0; i < rows; i++) {
-                let tr = document.createElement("tr");
-                for (let j = 0; j < maxColumns; j++) {
-                    let index = i * maxColumns + j;
-                    let td = document.createElement("td");
-                    if (index < combinations.length) {
-                        td.textContent = combinations[index];
-                    }
-                    tr.appendChild(td);
-                }
-                table.appendChild(tr);
+            let numberList = selectedNumbers.split(",").map(num => num.trim());
+            for (let i = 0; i < 15; i++) {
+                document.getElementById("num" + (i + 1)).value = numberList[i] || "";
             }
         }
     </script>
