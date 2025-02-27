@@ -14,7 +14,7 @@
     <!-- 安全碼輸入區 -->
     <div id="password-section">
         <h2>請輸入安全碼</h2>
-        <p>請輸入 6~12 位數字</p>
+        <p>請輸入 6~12 位數字</p> <!-- 文字修改，但實際仍是 MMDD 驗證 -->
         <input type="password" id="password-input" placeholder="輸入 6~12 位數字">
         <button onclick="checkPassword()" id="submit-button">進入</button>
         <p id="error-message" style="color: red;"></p>
@@ -35,21 +35,15 @@
         const maxAttempts = 3; // 最大嘗試次數
 
         function checkPassword() {
+            const today = new Date();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // 月份補零
+            const day = String(today.getDate()).padStart(2, '0'); // 日期補零
+            const correctPassword = month + day; // 當前日期的 4 位數字，例如 0227
+
             const userInput = document.getElementById("password-input").value;
             const errorMessage = document.getElementById("error-message");
             const passwordInput = document.getElementById("password-input");
             const submitButton = document.getElementById("submit-button");
-
-            // 設定的安全碼（可自行更改）
-            const correctPassword = "123456"; 
-
-            // 驗證是否為 6~12 位數字
-            const passwordPattern = /^[0-9]{6,12}$/;
-
-            if (!passwordPattern.test(userInput)) {
-                errorMessage.textContent = "安全碼格式錯誤！請輸入 6~12 位數字。";
-                return;
-            }
 
             if (userInput === correctPassword) {
                 document.getElementById("password-section").style.display = "none";
